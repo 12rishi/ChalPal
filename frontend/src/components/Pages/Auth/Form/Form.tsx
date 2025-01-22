@@ -1,39 +1,45 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { UserType } from "../../../../types/type";
+import { useFormik } from "formik";
+import { validateSchema } from "../../../../formValidation/yup";
 
-const Form: React.FC<{ type: string; onSubmit: Function }> = ({
+const Form: React.FC<{ type: string; submission: Function }> = ({
   type,
-  onSubmit,
+  submission,
 }) => {
-  const [data, setData] = useState<UserType>({
-    userName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setData({
-      ...data,
-      [name]: value,
-    });
-  };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const initialValues =
+    type === "register"
+      ? {
+          userName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        }
+      : {
+          email: "",
+          password: "",
+        };
 
-    onSubmit(data);
-    setData({
-      userName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
-  };
+  const validationSchema = useMemo(() => {
+    if (type === "register") {
+      return validateSchema.register;
+    } else {
+      return validateSchema.login;
+    }
+  }, [type]);
+  const formik = useFormik<UserType>({
+    initialValues: initialValues,
+    validationSchema,
+    onSubmit: (values, e) => {
+      submission(values);
+      formik.handleReset(e);
+    },
+  });
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <form
         className="space-y-6 dark:text-gray-100 w-full max-w-sm"
-        onSubmit={handleSubmit}
+        onSubmit={formik.handleSubmit}
       >
         {/* Email Field */}
         {type == "register" ? (
@@ -42,14 +48,22 @@ const Form: React.FC<{ type: string; onSubmit: Function }> = ({
               UserName
             </label>
             <input
-              className="block w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 leading-6 placeholder-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500/50 dark:border-gray-600 dark:bg-gray-800 dark:placeholder-gray-400 dark:focus:border-blue-500"
               type="text"
               id="userName"
               name="userName"
               placeholder="Enter your email"
-              onChange={handleChange}
-              value={data.userName}
+              onChange={formik.handleChange}
+              value={formik.values.userName}
+              onBlur={formik.handleBlur}
+              className={`input_field ${
+                formik?.touched?.userName && formik.errors?.userName
+                  ? "border-red-500"
+                  : "border-gray-300"
+              } `}
             />
+            {formik.errors.userName && formik.touched.userName ? (
+              <p>{formik.errors.userName}</p>
+            ) : null}
           </div>
         ) : null}
         <div className="space-y-1">
@@ -57,14 +71,22 @@ const Form: React.FC<{ type: string; onSubmit: Function }> = ({
             Email
           </label>
           <input
-            className="block w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 leading-6 placeholder-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500/50 dark:border-gray-600 dark:bg-gray-800 dark:placeholder-gray-400 dark:focus:border-blue-500"
+            className={`input_field ${
+              formik.touched.email && formik.errors.email
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
             type="email"
             id="email"
             name="email"
             placeholder="Enter your email"
-            onChange={handleChange}
-            value={data.email}
+            onChange={formik.handleChange}
+            value={formik.values.email}
+            onBlur={formik.handleBlur}
           />
+          {formik.errors.email && formik.touched.email ? (
+            <p>{formik.errors.email}</p>
+          ) : null}
         </div>
 
         {/* Password Field */}
@@ -73,14 +95,21 @@ const Form: React.FC<{ type: string; onSubmit: Function }> = ({
             Password
           </label>
           <input
-            className="block w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 leading-6 placeholder-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500/50 dark:border-gray-600 dark:bg-gray-800 dark:placeholder-gray-400 dark:focus:border-blue-500"
+            className={`input_field ${
+              formik.touched.password && formik.errors.password
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
             type="password"
             id="password"
             name="password"
             placeholder="Enter your password"
-            onChange={handleChange}
-            value={data.password}
+            onChange={formik.handleChange}
+            value={formik.values.password}
           />
+          {formik.errors.password && formik.touched.password ? (
+            <p>{formik.errors.password}</p>
+          ) : null}
         </div>
         {type == "register" && (
           <div className="space-y-1">
@@ -88,14 +117,21 @@ const Form: React.FC<{ type: string; onSubmit: Function }> = ({
               Confirm Password
             </label>
             <input
-              className="block w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 leading-6 placeholder-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500/50 dark:border-gray-600 dark:bg-gray-800 dark:placeholder-gray-400 dark:focus:border-blue-500"
+              className={`input_field ${
+                formik.touched.confirmPassword && formik.errors.confirmPassword
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
               type="password"
               id="password"
               name="confirmPassword"
               placeholder="Enter your password"
-              onChange={handleChange}
-              value={data.confirmPassword}
+              onChange={formik.handleChange}
+              value={formik.values.confirmPassword}
             />
+            {formik.errors.confirmPassword && formik.touched.confirmPassword ? (
+              <p>{formik.errors.confirmPassword}</p>
+            ) : null}
           </div>
         )}
 

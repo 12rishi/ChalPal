@@ -19,7 +19,7 @@ const Register = () => {
       navigate(`/verify/${email}`);
     }
   }, [status, dispatch, email]);
-  return <Form type="register" onSubmit={submitRegisterData} />;
+  return <Form type="register" submission={submitRegisterData} />;
 };
 
 export default Register;

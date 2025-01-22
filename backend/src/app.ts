@@ -15,12 +15,7 @@ app.use(
     methods: ["POST", "GET", "UPDATE", "PATCH", "DELETE", "OPTIONS"],
   })
 );
-const data = {
-  from: "chalpal123@gmail.com",
-  to: "thaparishi369@gmail.com",
-  subject: "testing",
-  text: "hello am rishi",
-};
+
 // (async () => {
 //   try {
 //     const responseFromNodeMailer = await sendMail(data);

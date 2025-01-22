@@ -19,7 +19,7 @@ const Login = () => {
       navigate("/");
     }
   }, [status, token, dispatch]);
-  return <Form type={"login"} onSubmit={postLoginData} />;
+  return <Form type={"login"} submission={postLoginData} />;
 };
 
 export default Login;
