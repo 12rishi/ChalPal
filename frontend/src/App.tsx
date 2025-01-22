@@ -1,21 +1,27 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 import Home from "./components/Pages/Home/Home";
-import Register from "./components/Pages/Auth/Register/Register";
-import Login from "./components/Pages/Auth/Login/Login";
+
 import { Provider } from "react-redux";
 import store from "./store/store";
 import HOC from "./components/HOC/HOC";
 
 import { useAppSelector } from "./store/hook";
 import { OTP } from "./components/Pages/Auth/OTPPage/OTP";
-
+import { lazy, Suspense } from "react";
+import Spinner from "./components/Spinner/Spinner";
+const Register = lazy(
+  () => import("./components/Pages/Auth/Register/Register")
+);
+const Login = lazy(() => import("./components/Pages/Auth/Login/Login"));
 function App() {
   return (
     <>
       <Provider store={store}>
         <BrowserRouter>
-          <AppComponent />
+          <Suspense fallback={<Spinner />}>
+            <AppComponent />
+          </Suspense>
         </BrowserRouter>
       </Provider>
     </>
